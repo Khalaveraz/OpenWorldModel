@@ -1,0 +1,123 @@
+schema_version = 1
+
+[model]
+deterministic_size = 512
+stochastic_size = 64
+observation_hidden = 512
+embedding_size = 256
+transition_hidden = 256
+decoder_hidden = 512
+task_hidden = 256
+log_variance_min = -8.0
+log_variance_max = 4.0
+latent_scale_min = 0.1
+latent_scale_max = 10.0
+kl_weight = 0.1
+action_scale_n = 2.0
+time_scale_s = 0.1
+age_cap_s = 2.0
+sequence_transitions = 32
+learning_rate = 0.0003
+weight_decay = 0.0001
+gradient_norm_cap = 10.0
+
+[environment]
+arena_size_m = 1.0
+physics_dt = 0.01
+substeps = 10
+max_episode_steps = 200
+agent_radius_m = 0.035
+object_radius_m = 0.045
+agent_mass_kg = 1.0
+object_mass_kg = [0.5, 1.0, 1.5]
+linear_drag_kg_per_s = [0.5, 1.0, 1.5]
+restitution = [0.0, 0.3]
+shape_friction = 0.5
+solver_iterations = 20
+wall_radius_m = 0.005
+collision_slop_m = 0.001
+obstacle_layouts = [[], [[0.44, 0.40, 0.56, 0.60]], [[0.25, 0.40, 0.35, 0.60], [0.65, 0.40, 0.75, 0.60]]]
+hazard_rect = [0.72, 0.05, 0.92, 0.20]
+
+[action]
+low = [-2.0, -2.0]
+high = [2.0, 2.0]
+dtype = "float32"
+units = "N"
+invalid_policy = "clip"
+fallback = [0.0, 0.0]
+
+[observation]
+rgb_shape = [96, 96, 3]
+rgb_dtype = "uint8"
+rgb_units = "uint8"
+proprio_shape = [2]
+proprio_dtype = "float32"
+proprio_units = "m/s"
+modalities = ["rgb", "proprio"]
+preprocessing_version = "raw-rgb-v1"
+time_units = "s"
+
+[reset]
+default_task = "reach"
+near_probability = 0.5
+near_distance_m = [0.10, 0.20]
+max_attempts = 2000
+clearance_m = 0.005
+
+[reward]
+discount = 0.99
+success_bonus = 1.0
+step_penalty = -0.01
+shaping_weight = 2.0
+push_agent_weight = 0.25
+success_radius_m = 0.05
+success_speed_m_per_s = 0.1
+success_hold_decisions = 3
+
+[dataset]
+train_transitions = 200000
+validation_transitions = 20000
+test_transitions = 20000
+task_probabilities = [0.5, 0.5]
+policy = "random"
+action_hold_decisions = 3
+zero_force_probability = 0.1
+train_seed = 1000
+validation_seed = 2000
+test_seed = 3000
+pilot_seed = 4000
+
+[encoder]
+model = "resnet18"
+weights = "IMAGENET1K_V1"
+output_layer = "layer2"
+feature_shape = [128, 12, 12]
+pooled_shape = [128, 6, 6]
+visual_dimensions = 4608
+frozen = true
+evaluation_mode = true
+rgb_divisor = 255.0
+mean = [0.485, 0.456, 0.406]
+std = [0.229, 0.224, 0.225]
+center_crop = false
+cache_dtype = "float16"
+normalization_dtype = "float32"
+normalization_std_floor = 0.0001
+
+[augmentation]
+enabled = true
+views_per_episode = 1
+clean_probability = 0.5
+occlusion_start_probability = 0.05
+occlusion_duration_decisions = [1, 5]
+distractor_episode_probability = 0.5
+distractor_radius_px = 3
+distractor_speed_px_per_decision = 2.0
+distractor_direction_hold_decisions = 3
+distractor_rgb = [180, 60, 220]
+distractor_layer = "behind_task_geometry"
+pixel_noise_std = 0.02
+proprio_noise_std_m_per_s = 0.02
+sample_age_cap_s = 2.0
+seed = 31415
